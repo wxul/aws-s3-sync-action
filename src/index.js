@@ -87,6 +87,7 @@ async function main() {
   async function upload() {
     if (!checkFiles()) {
       core.error('path is empty!');
+      core.setFailed('path is empty!')
       return;
     }
     try {
@@ -206,18 +207,22 @@ async function main() {
         core.info('create invalidation paths', needUpload);
         try {
           await createInv();
-          core.info('clear cdn cache success!')
+          core.info('clear cdn cache success!');
         } catch (error) {
-          core.error('create invalidation failed', error)
+          core.error('create invalidation failed', error);
         }
 
       }
     } catch (error) {
       core.error(error);
+      core.setFailed(error.message);
     }
   }
 
   await upload();
 }
 
-main().catch(core.error);
+main().catch(error => {
+  core.error(error);
+  core.setFailed(error.message);
+});
