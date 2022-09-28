@@ -34,6 +34,7 @@ Compare source files with s3, upload if is different or not exist.
 
 ## Example usage
 
+``` yml
 uses: wxul/aws-s3-sync-action@master
 with:
   AWS_ACCESS_KEY_ID: ''
@@ -42,3 +43,4 @@ with:
   AWS_BUCKET_NAME: ''
   AWS_CLOUDFRONT_DISTRIBUTION_ID: ''
   source: './dist'
+```
