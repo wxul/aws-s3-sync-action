@@ -1,7 +1,7 @@
 const core = require('@actions/core');
 const fs = require('fs');
 const path = require('path');
-const mime = require('mime-types')
+const mime = require('mime-types');
 const createHash = require('etag-hash').createHash;
 
 const params = {
