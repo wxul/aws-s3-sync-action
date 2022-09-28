@@ -1,0 +1,36 @@
+name: 'AWS S3 Sync Action'
+description: 'Sync files to s3 with compare and create cloudfront invalidation.'
+author: wxul
+inputs:
+  AWS_ACCESS_KEY_ID:
+    description: AWS ACCESS KEY
+    required: true
+
+  AWS_SECRET_ACCESS_KEY:
+    description: AWS SECRET KEY
+    required: true
+
+  AWS_REGION:
+    description: AWS REGION
+    required: true
+
+  AWS_BUCKET_NAME:
+    description: Bucket name
+    required: true
+  
+  AWS_CLOUDFRONT_DISTRIBUTION_ID:
+    description: Cloudfront distribution id
+    required: false
+
+  compare:
+    description: Compare ETag with s3 existed files
+    required: false
+    default: "true"
+  
+  source:
+    description: Source directory
+    required: true
+
+runs:
+  using: 'node16'
+  main: 'lib/index.js'
