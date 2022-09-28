@@ -86,8 +86,8 @@ async function main() {
 
   async function upload() {
     if (!checkFiles()) {
-      core.error('path is empty!');
-      core.setFailed('path is empty!')
+      core.error('Source path is empty!');
+      core.setFailed('Source path is empty!')
       return;
     }
     try {
@@ -124,7 +124,7 @@ async function main() {
             ContentType: contentType,
           }, {}, (err, data) => {
             if (err) {
-              core.error(`upload ${key} failed!`, err)
+              core.error(`Upload ${key} failed: ${err.message}`)
               reject(err);
             } else {
               resolve(true)
@@ -173,7 +173,7 @@ async function main() {
 
       await Promise.all(mapFunction.map(f => f()));
 
-      core.info(`total files: ${allFiles.length}, upload changed files: ${uploadCount}`);
+      core.info(`Total files: ${allFiles.length}, upload changed files: ${uploadCount}`);
 
       function encodeUrl(str) {
         return str.replace(/[~]/ig, '%7E');
@@ -204,12 +204,15 @@ async function main() {
       }
 
       if (uploadCount > 0 && params.cloudFrontDistributionId) {
-        core.info('create invalidation paths', needUpload);
+        core.info('Create invalidation paths');
+        needUpload.forEach(up => {
+          core.info('\t' + up);
+        })
         try {
           await createInv();
-          core.info('clear cdn cache success!');
+          core.info('Clear cdn cache success!');
         } catch (error) {
-          core.error('create invalidation failed', error);
+          core.error('Create invalidation failed:' + error.message);
         }
 
       }
