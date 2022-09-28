@@ -154,14 +154,14 @@ async function main() {
           absoluteFilePath = absoluteFilePath.replace(/\\/g, '/');
           const fileContent = fs.readFileSync(path.resolve(BASE_DIR, absoluteFilePath));
 
-          let needUpload = true;
+          let needUploadFile = true;
           if (params.compare) {
             const meta = await getMeta(absoluteFilePath);
             const etag = etagFile(fileContent);
             const hasExistFile = meta && meta.ETag === JSON.stringify(etag);
-            needUpload = !hasExistFile;
+            needUploadFile = !hasExistFile;
           }
-          if (needUpload) {
+          if (needUploadFile) {
             // upload
             needUpload.push(absoluteFilePath.startsWith('/') ? absoluteFilePath : ('/' + absoluteFilePath))
             const formattedKey = formatS3Key(absoluteFilePath); // replace windows '\\' to '/'
