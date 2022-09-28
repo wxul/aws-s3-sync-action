@@ -11,7 +11,7 @@ const params = {
   awsRegion: core.getInput('AWS_REGION', { required: true }),
   source: core.getInput('source', { required: true }),
   compare: core.getInput('compare').toLowerCase() === 'true',
-  cloudFrontDistributionId: getInput('AWS_CLOUDFRONT_DISTRIBUTION_ID'),
+  cloudFrontDistributionId: core.getInput('AWS_CLOUDFRONT_DISTRIBUTION_ID'),
 }
 process.env['AWS_ACCESS_KEY_ID'] = params.awsAccessKeyId;
 process.env['AWS_SECRET_ACCESS_KEY'] = params.awsSecretAccessKey;
