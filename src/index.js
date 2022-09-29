@@ -196,7 +196,7 @@ async function main() {
             if (err) {
               reject(err);
             } else {
-              core.info(data);
+              core.info(JSON.stringify(data));
               resolve(data);
             }
           })
@@ -206,7 +206,7 @@ async function main() {
       if (uploadCount > 0 && params.cloudFrontDistributionId) {
         core.info('Create invalidation paths');
         needUpload.forEach(up => {
-          core.info('\t' + up);
+          core.info('  ' + up);
         })
         try {
           await createInv();
