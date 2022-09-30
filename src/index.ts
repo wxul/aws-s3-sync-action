@@ -1,5 +1,4 @@
-import core from "@actions/core";
-import github from "@actions/github";
+import * as core from "@actions/core";
 import { Config, S3 } from "aws-sdk";
 import { readFileSync } from "fs";
 import { join, resolve } from "path";

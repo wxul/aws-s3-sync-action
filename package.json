@@ -4,7 +4,7 @@
   "description": "",
   "main": "lib/index.js",
   "scripts": {
-    "build": "ncc build ./src/index.ts -o ./lib -m -t"
+    "build": "ncc build ./src/index.ts -o ./lib -t"
   },
   "author": "",
   "license": "ISC",
