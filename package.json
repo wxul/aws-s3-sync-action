@@ -4,15 +4,21 @@
   "description": "",
   "main": "lib/index.js",
   "scripts": {
-    "build": "ncc build ./src/index.js -o ./lib"
+    "build": "ncc build ./src/index.ts -o ./lib -m -t"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@actions/core": "^1.9.1",
     "@actions/github": "^5.1.0",
+    "@types/node": "^18.7.23",
     "aws-sdk": "^2.1225.0",
     "etag-hash": "^1.1.3",
-    "mime-types": "^2.1.35"
+    "mime-types": "^2.1.35",
+    "typescript": "^4.8.4"
+  },
+  "devDependencies": {
+    "@types/mime-types": "^2.1.1",
+    "ts-node": "^10.9.1"
   }
 }
