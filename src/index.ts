@@ -44,7 +44,7 @@ async function run() {
   if (compare) {
     core.info(`[Time:Compare:Begin]: ${Date.now() - begin}`);
     await new Promise((rs, reject) => {
-      const sche = new Scheduler(concurrent, rs);
+      const sche = new Scheduler(100, rs);
       totalFiles.forEach((key) => {
         sche.add(async () => {
           const file = readFileSync(resolve(path, key));

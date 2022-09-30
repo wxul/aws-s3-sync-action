@@ -22,7 +22,7 @@ inputs:
   concurrent:
     description: Concurrent count
     required: false
-    default: '8'
+    default: '20'
 
   if_has_failed:
     description: Choose how to exit the action if some files upload failed (fail or ignore)

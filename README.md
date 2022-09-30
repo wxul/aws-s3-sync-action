@@ -4,43 +4,19 @@ Sync files to s3 with compare and create cloudfront invalidation.
 
 ## Inputs
 
-## `AWS_ACCESS_KEY_ID`
-
-**Required** AWS_ACCESS_KEY_ID.
-
-## `AWS_SECRET_ACCESS_KEY`
-
-**Required** AWS_SECRET_ACCESS_KEY.
-
-## `AWS_REGION`
-
-**Required** AWS_REGION.
-
-## `AWS_BUCKET_NAME`
-
-**Required** AWS_BUCKET_NAME.
-
-## `AWS_CLOUDFRONT_DISTRIBUTION_ID`
-
-DISTRIBUTION_ID, if set, will create cloudfront invalidation, need permissions.
-
-## `compare`
-
-Compare source files with s3, upload if is different or not exist.
-
-## `source`
-
-**Required** Source dir.
-
 ## Example usage
 
 ``` yml
 uses: wxul/aws-s3-sync-action@master
+env:
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}  ## AWS_ACCESS_KEY_ID
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }} ## AWS_ACCESS_KEY_ID
+  AWS_REGION: us-east-1  ## AWS_REGION
 with:
-  AWS_ACCESS_KEY_ID: ''
-  AWS_SECRET_ACCESS_KEY: ''
-  AWS_REGION: ''
-  AWS_BUCKET_NAME: ''
-  AWS_CLOUDFRONT_DISTRIBUTION_ID: ''
-  source: './dist'
+  aws_bucket_name: '' ## required, s3 bucket
+  aws_cloudfront_distribution_id: '' ## if set, will create distribution, need permission.
+  source: './dist'  ## required
+  compare: true  ## default: true, only upload different files
+  concurrent: 10  ## default: 20
+  if_has_failed: fail  ## default: ignore, set fail to exit action if some files upload fail
 ```
