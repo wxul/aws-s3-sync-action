@@ -6,9 +6,10 @@ import { AWSHelper } from "./aws";
 import { Scheduler } from "./schedule";
 import { checkFiles, convertPath, getFiles } from "./utils";
 
-process.env['AWS_OUTPUT'] = 'json';
+process.env["AWS_OUTPUT"] = "json";
 
 async function run() {
+  const begin = Date.now();
   const bucket = core.getInput("aws_bucket_name", { required: true });
   const distributionId = core.getInput("aws_cloudfront_distribution_id");
 
@@ -41,6 +42,7 @@ async function run() {
   const failedFiles: string[] = [];
 
   if (compare) {
+    core.info(`[Time:Compare:Begin]: ${Date.now() - begin}`);
     await new Promise((rs, reject) => {
       const sche = new Scheduler(concurrent, rs);
       totalFiles.forEach((key) => {
@@ -58,6 +60,7 @@ async function run() {
         });
       });
     });
+    core.info(`[Time:Compare:End]: ${Date.now() - begin}`);
   } else {
     needToUploadFiles = totalFiles.slice(0);
   }
@@ -72,6 +75,7 @@ async function run() {
   }
 
   // upload
+  core.info(`[Time:Upload:Begin]: ${Date.now() - begin}`);
   await new Promise((rs, reject) => {
     const sche = new Scheduler(concurrent, rs);
     needToUploadFiles.forEach((key) => {
@@ -90,6 +94,7 @@ async function run() {
       });
     });
   });
+  core.info(`[Time:Upload:End]: ${Date.now() - begin}`);
 
   if (failedFiles.length > 0) {
     core.info(`Failed: `);
@@ -102,6 +107,7 @@ async function run() {
 
   // create invalidation
   if (distributionId) {
+    core.info(`[Time:Invalidation:Begin]: ${Date.now() - begin}`);
     try {
       const data = await AWSHelper.CreateInvalidation(
         distributionId,
@@ -111,13 +117,15 @@ async function run() {
       core.setOutput("invalidation_id", data.Invalidation?.Id);
       core.info(JSON.stringify(data, null, 2));
     } catch (error) {
+      core.warning("Create invalidation failed");
       core.warning(error.message);
+    } finally {
+      core.info(`[Time:Invalidation:End]: ${Date.now() - begin}`);
     }
   }
+  core.info(`[Time:End]: ${Date.now() - begin}`);
 }
 
 run().catch((error) => {
-  core.setOutput("error_message", error.message);
-  core.error(error.message);
   core.setFailed(error.message);
 });

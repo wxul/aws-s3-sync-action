@@ -28,3 +28,24 @@ export class Scheduler {
     return res;
   }
 }
+
+function sleep(n: number = 3000) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, n);
+  });
+}
+
+async function test() {
+  console.log("begin");
+  await new Promise((rs, reject) => {
+    const sche = new Scheduler(4, rs);
+    [5, 3, 7, 6, 8, 1, 2, 4, 9].forEach((n) => {
+      sche.add(async () => {
+        await sleep(n * 1000);
+        console.log(`sleep: ${n}`);
+      });
+    });
+  });
+  console.log("end");
+}
+// test();
