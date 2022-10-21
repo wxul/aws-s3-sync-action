@@ -7,7 +7,7 @@ Sync files to s3 with compare and create cloudfront invalidation.
 ## Example usage
 
 ``` yml
-uses: wxul/aws-s3-sync-action@master
+uses: wxul/aws-s3-sync-action@v1
 env:
   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}  ## AWS_ACCESS_KEY_ID
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }} ## AWS_ACCESS_KEY_ID

@@ -35,6 +35,8 @@ outputs:
     description: Cloudfront invalidation id if Created
   uploaded_files:
     description: Uploaded files
+  invalidation_error:
+    description: Create Invalidation Error
 
 runs:
   using: 'node16'

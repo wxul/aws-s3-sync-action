@@ -1,10 +1,10 @@
 import * as core from "@actions/core";
-import { Config, S3 } from "aws-sdk";
+import { AWSError, Config, S3 } from "aws-sdk";
 import { readFileSync } from "fs";
 import { join, resolve } from "path";
 import { AWSHelper } from "./aws";
 import { Scheduler } from "./schedule";
-import { checkFiles, convertPath, getFiles } from "./utils";
+import { checkFiles, convertPath, encodeUrl, getFiles } from "./utils";
 
 process.env["AWS_OUTPUT"] = "json";
 
@@ -78,12 +78,13 @@ async function run() {
   core.info(`[Time:Upload:Begin]: ${Date.now() - begin}`);
   await new Promise((rs, reject) => {
     const sche = new Scheduler(concurrent, rs);
+    core.info(`Uploaded Files:`);
     needToUploadFiles.forEach((key) => {
       sche.add(async () => {
         const file = readFileSync(resolve(path, key));
         try {
           const data = await AWSHelper.UploadFile(s3, bucket, key, file);
-          core.info(`Uploaded: ${data.Key}`);
+          core.info(`\t${data.Key}`);
           uploadedFiles.push(key);
         } catch (error) {
           failedFiles.push(key);
@@ -106,19 +107,25 @@ async function run() {
   core.setOutput("uploaded_files", uploadedFiles);
 
   // create invalidation
-  if (distributionId) {
+  if (distributionId && uploadedFiles.length > 0) {
     core.info(`[Time:Invalidation:Begin]: ${Date.now() - begin}`);
     try {
-      const data = await AWSHelper.CreateInvalidation(
-        distributionId,
-        uploadedFiles
-      );
+      const filesKey = uploadedFiles.map((url) => {
+        const u = encodeUrl(url);
+        return u.startsWith("/") ? u : `/${u}`;
+      });
+      core.info("Create Invalidation With Files:");
+      filesKey.forEach((k) => {
+        core.info(`\t${k}`);
+      });
+      const data = await AWSHelper.CreateInvalidation(distributionId, filesKey);
       core.info("Invalidation Created.");
       core.setOutput("invalidation_id", data.Invalidation?.Id);
       core.info(JSON.stringify(data, null, 2));
     } catch (error) {
       core.warning("Create invalidation failed");
       core.warning(error.message);
+      core.setOutput("invalidation_error", error.message);
     } finally {
       core.info(`[Time:Invalidation:End]: ${Date.now() - begin}`);
     }

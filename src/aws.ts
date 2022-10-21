@@ -76,10 +76,7 @@ export class AWSHelper {
           DistributionId: distributionId,
           InvalidationBatch: {
             Paths: {
-              Items: fileKeys.map((url) => {
-                const u = encodeUrl(url);
-                return u.startsWith("/") ? u : `/${u}`;
-              }),
+              Items: fileKeys,
               Quantity: fileKeys.length,
             },
             CallerReference: Date.now().toString(),
