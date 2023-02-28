@@ -48,13 +48,13 @@ async function run() {
       totalFiles.forEach((key) => {
         sche.add(async () => {
           const file = readFileSync(resolve(path, key));
-          const hasSameFile = await AWSHelper.CompareETag(
+          const needUpdate = await AWSHelper.NeedUpdate(
             s3,
             bucket,
             key,
             file
           );
-          if (!hasSameFile) {
+          if (needUpdate) {
             needToUploadFiles.push(key);
           }
         });

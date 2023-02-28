@@ -2,6 +2,14 @@
 
 Sync files to s3 with compare and create cloudfront invalidation.
 
+## Release
+
+1. Clone
+2. `npm i`
+3. Install `@vercel/ncc` : `npm i -g @vercel/ncc` (skip if installed)
+4. `npm run build`
+5. Push
+
 ## Inputs
 
 ## Example usage

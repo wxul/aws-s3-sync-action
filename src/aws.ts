@@ -34,6 +34,24 @@ export class AWSHelper {
     });
   }
 
+  public static NeedUpdate(
+    s3: S3,
+    bucket: string,
+    key: string,
+    file: Buffer
+  ): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      s3.headObject({ Bucket: bucket, Key: key }, (err, data) => {
+        if (err) {
+          resolve(false);
+        } else {
+          const etag = getEtag(file);
+          resolve(data.ETag !== JSON.stringify(etag));
+        }
+      });
+    });
+  }
+
   public static UploadFile(
     s3: S3,
     bucket: string,
