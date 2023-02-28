@@ -38,6 +38,7 @@ async function run() {
     return convertPath(join(folder, filename));
   });
   let needToUploadFiles: string[] = [];
+  let needCleanCacheFiles: string[] = [];
   const uploadedFiles: string[] = [];
   const failedFiles: string[] = [];
 
@@ -48,14 +49,17 @@ async function run() {
       totalFiles.forEach((key) => {
         sche.add(async () => {
           const file = readFileSync(resolve(path, key));
-          const needUpdate = await AWSHelper.NeedUpdate(
+          const { hasFile, needUpload } = await AWSHelper.CompareETag(
             s3,
             bucket,
             key,
             file
           );
-          if (needUpdate) {
+          if (!hasFile || needUpload) {
             needToUploadFiles.push(key);
+          }
+          if (hasFile && needUpload) {
+            needCleanCacheFiles.push(key);
           }
         });
       });
@@ -63,6 +67,7 @@ async function run() {
     core.info(`[Time:Compare:End]: ${Date.now() - begin}`);
   } else {
     needToUploadFiles = totalFiles.slice(0);
+    needCleanCacheFiles = totalFiles.slice(0);
   }
 
   if (needToUploadFiles.length === 0) {
@@ -107,10 +112,13 @@ async function run() {
   core.setOutput("uploaded_files", uploadedFiles);
 
   // create invalidation
-  if (distributionId && uploadedFiles.length > 0) {
+  const cleanCacheFiles = needCleanCacheFiles.filter((key) =>
+    uploadedFiles.includes(key)
+  );
+  if (distributionId && cleanCacheFiles.length > 0) {
     core.info(`[Time:Invalidation:Begin]: ${Date.now() - begin}`);
     try {
-      const filesKey = uploadedFiles.map((url) => {
+      const filesKey = cleanCacheFiles.map((url) => {
         const u = encodeUrl(url);
         return u.startsWith("/") ? u : `/${u}`;
       });

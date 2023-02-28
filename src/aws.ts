@@ -21,14 +21,15 @@ export class AWSHelper {
     bucket: string,
     key: string,
     file: Buffer
-  ): Promise<boolean> {
+  ): Promise<{ hasFile: boolean; needUpload: boolean }> {
     return new Promise((resolve, reject) => {
       s3.headObject({ Bucket: bucket, Key: key }, (err, data) => {
         if (err) {
-          resolve(false);
+          resolve({ hasFile: false, needUpload: true });
         } else {
           const etag = getEtag(file);
-          resolve(data.ETag === JSON.stringify(etag));
+          const needUpload = data.ETag !== JSON.stringify(etag);
+          resolve({ hasFile: true, needUpload });
         }
       });
     });
