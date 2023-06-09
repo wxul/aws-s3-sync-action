@@ -57,7 +57,8 @@ export class AWSHelper {
     s3: S3,
     bucket: string,
     key: string,
-    file: Buffer
+    file: Buffer,
+    acl?: string
   ): Promise<S3.ManagedUpload.SendData> {
     return new Promise((resolve, reject) => {
       const contentType = lookup(key);
@@ -68,7 +69,7 @@ export class AWSHelper {
         {
           Body: file,
           Bucket: bucket,
-          ACL: "public-read",
+          ACL: acl || "public-read",
           Key: key,
           ContentType: contentType,
         },

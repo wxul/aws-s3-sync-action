@@ -11,6 +11,7 @@ process.env["AWS_OUTPUT"] = "json";
 async function run() {
   const begin = Date.now();
   const bucket = core.getInput("aws_bucket_name", { required: true });
+  const acl = core.getInput("aws_bucket_acl");
   const distributionId = core.getInput("aws_cloudfront_distribution_id");
 
   const path = core.getInput("source", { required: true });
@@ -88,7 +89,7 @@ async function run() {
       sche.add(async () => {
         const file = readFileSync(resolve(path, key));
         try {
-          const data = await AWSHelper.UploadFile(s3, bucket, key, file);
+          const data = await AWSHelper.UploadFile(s3, bucket, key, file, acl);
           core.info(`\t${data.Key}`);
           uploadedFiles.push(key);
         } catch (error) {
