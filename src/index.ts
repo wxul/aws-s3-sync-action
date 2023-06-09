@@ -92,6 +92,7 @@ async function run() {
           core.info(`\t${data.Key}`);
           uploadedFiles.push(key);
         } catch (error) {
+          core.info(`Upload Error: ${error.message}`);
           failedFiles.push(key);
           if (ifFailed === "fail") {
             reject(error);
