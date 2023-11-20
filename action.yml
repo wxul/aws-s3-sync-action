@@ -6,6 +6,10 @@ inputs:
     description: Bucket name
     required: true
 
+  aws_bucket_dir:
+    description: Bucket prefix
+    required: false
+
   aws_bucket_acl:
     description: Bucket ACL, "private"|"public-read"|"public-read-write"|"authenticated-read"|"aws-exec-read"|"bucket-owner-read"|"bucket-owner-full-control"
     required: false

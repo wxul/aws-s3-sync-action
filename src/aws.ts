@@ -1,7 +1,8 @@
 import { S3, Credentials, config, CloudFront } from "aws-sdk";
 import { CredentialsOptions } from "aws-sdk/lib/credentials";
 import { lookup } from "mime-types";
-import { encodeUrl, getEtag } from "./utils";
+import { encodeUrl, getEtag, toPosixPath } from "./utils";
+import { join } from "path";
 
 export class AWSHelper {
   public static GetCredentials(): Promise<Credentials | CredentialsOptions> {

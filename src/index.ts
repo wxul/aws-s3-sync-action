@@ -4,7 +4,13 @@ import { readFileSync } from "fs";
 import { join, resolve } from "path";
 import { AWSHelper } from "./aws";
 import { Scheduler } from "./schedule";
-import { checkFiles, convertPath, encodeUrl, getFiles } from "./utils";
+import {
+  checkFiles,
+  convertPath,
+  encodeUrl,
+  getFiles,
+  toPosixPath,
+} from "./utils";
 
 process.env["AWS_OUTPUT"] = "json";
 
@@ -13,6 +19,9 @@ async function run() {
   const bucket = core.getInput("aws_bucket_name", { required: true });
   const acl = core.getInput("aws_bucket_acl");
   const distributionId = core.getInput("aws_cloudfront_distribution_id");
+
+  let prefix = core.getInput("aws_bucket_dir") ?? "";
+  prefix = toPosixPath(prefix).replace(/^\//, "");
 
   const path = core.getInput("source", { required: true });
   const compare = core.getInput("compare").toLowerCase() === "true";
@@ -89,7 +98,8 @@ async function run() {
       sche.add(async () => {
         const file = readFileSync(resolve(path, key));
         try {
-          const data = await AWSHelper.UploadFile(s3, bucket, key, file, acl);
+          const s3Key = prefix ? toPosixPath(join(prefix, key)) : key;
+          const data = await AWSHelper.UploadFile(s3, bucket, s3Key, file, acl);
           core.info(`\t${data.Key}`);
           uploadedFiles.push(key);
         } catch (error) {
@@ -121,8 +131,9 @@ async function run() {
     core.info(`[Time:Invalidation:Begin]: ${Date.now() - begin}`);
     try {
       const filesKey = cleanCacheFiles.map((url) => {
-        const u = encodeUrl(url);
-        return u.startsWith("/") ? u : `/${u}`;
+        let u = encodeUrl(url);
+        u = u.startsWith("/") ? u : `/${u}`;
+        return prefix ? toPosixPath(join(prefix, u)) : u;
       });
       core.info("Create Invalidation With Files:");
       filesKey.forEach((k) => {
