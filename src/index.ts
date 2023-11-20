@@ -133,8 +133,8 @@ async function run() {
     try {
       const filesKey = cleanCacheFiles.map((url) => {
         let u = encodeUrl(url);
-        u = u.startsWith("/") ? u : `/${u}`;
-        return prefix ? toPosixPath(join(prefix, u)) : u;
+        u = prefix ? toPosixPath(join(prefix, u)) : u;
+        return u.startsWith("/") ? u : `/${u}`;
       });
       core.info("Create Invalidation With Files:");
       filesKey.forEach((k) => {
