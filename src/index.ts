@@ -59,10 +59,11 @@ async function run() {
       totalFiles.forEach((key) => {
         sche.add(async () => {
           const file = readFileSync(resolve(path, key));
+          const s3Key = prefix ? toPosixPath(join(prefix, key)) : key;
           const { hasFile, needUpload } = await AWSHelper.CompareETag(
             s3,
             bucket,
-            key,
+            s3Key,
             file
           );
           if (!hasFile || needUpload) {
