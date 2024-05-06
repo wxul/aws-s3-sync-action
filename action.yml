@@ -15,6 +15,10 @@ inputs:
     required: false
     default: public-read
 
+  aws_bucket_sse:
+    description: The server-side encryption algorithm used when storing this object in Amazon S3 (for example, AES256, aws:kms)
+    required: false
+
   aws_cloudfront_distribution_id:
     description: Cloudfront distribution id
     required: false

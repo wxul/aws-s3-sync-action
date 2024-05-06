@@ -59,8 +59,12 @@ export class AWSHelper {
     bucket: string,
     key: string,
     file: Buffer,
-    acl?: string
+    options?: {
+      acl?: string;
+      sse?: string;
+    }
   ): Promise<S3.ManagedUpload.SendData> {
+    const { acl, sse } = options ?? {};
     return new Promise((resolve, reject) => {
       const contentType = lookup(key);
       if (!contentType) {
@@ -73,6 +77,7 @@ export class AWSHelper {
           ACL: acl || "public-read",
           Key: key,
           ContentType: contentType,
+          ServerSideEncryption: sse || "AES256",
         },
         {},
         (err, data) => {
