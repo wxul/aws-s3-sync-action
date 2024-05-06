@@ -77,7 +77,7 @@ export class AWSHelper {
           ACL: acl || "public-read",
           Key: key,
           ContentType: contentType,
-          ServerSideEncryption: sse || "AES256",
+          ServerSideEncryption: sse,
         },
         {},
         (err, data) => {
